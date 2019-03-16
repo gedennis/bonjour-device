@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'Device 1',
+  name: 'Panel 1',
   port: 3000
 };

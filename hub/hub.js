@@ -1,22 +1,22 @@
 /**
- * This component is about bonjour service and client
+ * This is hub device like panel.
  */
 
 const Bonjour = require('bonjour');
 
-const config = require('../config');
+const config = require('./config');
 
 // set up bonjour instance
 const opts = config.bonjour || {};
 const bonjour = Bonjour(opts);
 
-class Device {
+class Hub {
   constructor(name, type, port) {
     this.name = name;
     this.type = type || 'http';
     this.port = port;
     this.service = null;
-    this.client = null;
+    // this.client = null;
   }
 
   init() {
@@ -34,14 +34,14 @@ class Device {
     });
 
     // init a bonjour client to search devices up/down
-    this.client = bonjour.find({ type: this.type });
-    this.client.on('up', payload => {
-      console.log('new device up', { name: payload.name, type: payload.type });
-    });
-    this.client.on('down', payload => {
-      console.log('device down', { name: payload.name, type: payload.type });
-    });
+    // this.client = bonjour.find({ type: this.type });
+    // this.client.on('up', payload => {
+    //   console.log('new device up', { name: payload.name, type: payload.type });
+    // });
+    // this.client.on('down', payload => {
+    //   console.log('device down', { name: payload.name, type: payload.type });
+    // });
   }
 }
 
-module.exports = Device;
+module.exports = Hub;
