@@ -51,7 +51,11 @@ class Cacher {
     return this.freshPresence({ devName, state: 'OFF' });
   }
 
-  async getPresence(payload) {}
+  async getPresence(payload) {
+    const presenceStr = await this.client.get(key);
+    if (!presenceStr) return {};
+    return JSON.parse(presenceStr);
+  }
 }
 
 module.exports = new Cacher();

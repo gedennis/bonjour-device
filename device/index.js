@@ -46,7 +46,7 @@ class Device {
       host: this.panel.host,
       port: this.panel.port
     });
-    const ioStr = `http://${this.panel.host}:${this.panel.port}`;
+    const ioStr = `http://${this.panel.host}:${this.panel.port}/news`;
     this.client = io(ioStr);
     // this.client = io();
     this.client.on('connect', () => {
