@@ -6,6 +6,7 @@ const path = require('path');
 const socket = require('socket.io');
 
 const config = require('./config');
+const cache = require('./cache');
 
 const app = new Koa();
 
@@ -21,14 +22,20 @@ app.use(ctx => {
 
 const server = http.createServer(app.callback());
 const io = socket(server);
-io.on('connection', socket => {
+io.on('connection', async socket => {
   console.log('A device connected');
-  socket.on('message', message => {
+  socket.on('message', async message => {
     console.log('Receive message from device', message);
+    message.name &&
+      (await cache.setPresence({
+        socketId: socket.id,
+        devName: message.name,
+        state: 'ON'
+      }));
   });
-  socket.on('disconnect', function(msg) {
+  socket.on('disconnect', async msg => {
     console.log('device disconnected');
-    console.log('disconnect', msg);
+    await cache.clearConnection({ socketId: socket.id });
   });
 });
 server.listen(PORT);

@@ -1,104 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <meta charset="UTF-8" />
-    <title>Koa-Socket Example</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <style>
-      body {
-        margin: 0;
-        padding: 20px;
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        font-family: -apple-system, '.SFNSDisplay-Regular', 'Helvetica Neue',
-          'Arial', sans-serif;
-        color: #32322c;
-      }
-      button {
-        display: block;
-        margin-top: 0.5em;
-        border: none;
-        border-radius: 4px;
-        font-size: 18px;
-        font-weight: 600;
-        text-align: center;
-        padding: 0.3em 3em;
-        background: #13c4a3;
-        transition: all 0.177s linear;
-        text-decoration: none;
-        cursor: pointer;
-      }
-      button:hover {
-        background: #36f1cd;
-        text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3);
-      }
-      .small {
-        font-size: 70%;
-      }
-      .connections {
-        position: absolute;
-        width: 44px;
-        height: 44px;
-        top: 20px;
-        right: 20px;
-        line-height: 44px;
-        font-size: 16px;
-        font-weight: 700;
-        background: rgba(0, 0, 0, 0.45);
-        color: white;
-        border-radius: 4px;
-      }
-      .connections span {
-        display: block;
-        text-align: center;
-      }
-    </style>
+    <title>Device Monitor</title>
+    <script src="https://cdn.staticfile.org/react/16.4.0/umd/react.development.js"></script>
+    <script src="https://cdn.staticfile.org/react-dom/16.4.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.staticfile.org/babel-standalone/6.26.0/babel.min.js"></script>
   </head>
+  <style>
+    body {
+      height: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    div {
+      width: 100%;
+      height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    div.container {
+      width: 90%;
+      /* height: 80%; */
+      display: flex;
+      flex-direction: row;
+      align-content: flex-start;
+      align-items: flex-start;
+      border: 1px solid green;
+      padding: 20px;
+    }
+    div.device {
+      display: flex;
+      width: 80px;
+      height: 80px;
+      margin-right: 20px;
+    }
+    .on {
+      background-color: green;
+    }
+    .off {
+      background-color: gray;
+    }
+  </style>
   <body>
-    <button class="js-btn">Send</button>
-    <button class="js-ack">
-      Send <span class="small">(with acknowledgement)</span>
-    </button>
-    <button class="js-chatBtn">Chat</button>
-    <div class="connections"><span class="js-connect">1</span></div>
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script>
-      var socket = io();
-      var btn = document.querySelector('.js-btn');
-      btn.addEventListener('click', function(event) {
-        socket.emit('data', {
-          foo: 'foo'
-        });
-      });
-      var ack = document.querySelector('.js-ack');
-      ack.addEventListener('click', function(event) {
-        socket.emit(
-          'ack',
-          {
-            foo: 'foo'
-          },
-          res => {
-            console.log('acknowledgement:', res);
-          }
-        );
-      });
-      var connections = document.querySelector('.js-connect');
-      socket.on('connections', function(event) {
-        console.log('connected', event);
-        connections.innerHTML = event.numConnections;
-      });
-      socket.on('response', function(event) {
-        console.log('response:', event.message);
-      });
-      var chat = io('http://localhost:3000/chat');
-      chat.on('message', function(event) {
-        console.log('chat message:', event);
-      });
-      var chatBtn = document.querySelector('.js-chatBtn');
-      chatBtn.addEventListener('click', function(event) {
-        chat.emit('message', 'yo central, are you on the line?');
-      });
+    <div id="root"></div>
+    <script type="text/babel">
+      const Device = props => (
+        <div className={`${props.state} device`}>
+          <h4>{props.name}</h4>
+          <h5>{props.state}</h5>
+        </div>
+      );
+      const devices = [
+        { name: 'PHONE', state: 'on' },
+        { name: 'FRIDGE', state: 'off' },
+        { name: 'WATCH', state: 'off' }
+      ];
+      const DeviceList = props => {
+        const devices = props.devices;
+        console.log(devices);
+        const items = devices.map(item => (
+          <Device key={item.name} name={item.name} state={item.state} />
+        ));
+        return <div className="container"> {items} </div>;
+      };
+      ReactDOM.render(
+        <div>
+          <h1>Device Monitor</h1>
+          <DeviceList devices={devices} />
+        </div>,
+        document.getElementById('root')
+      );
     </script>
   </body>
 </html>
