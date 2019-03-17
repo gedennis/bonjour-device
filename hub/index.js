@@ -23,9 +23,9 @@ app.use(ctx => {
 const server = http.createServer(app.callback());
 const io = socket(server);
 // news for device on/off  chat for sending presence to frontend
-const news = io.of('news');
+const device = io.of('device');
 const chat = io.of('chat');
-news.on('connection', async socket => {
+device.on('connection', async socket => {
   console.log('A device connected');
   socket.on('message', async message => {
     console.log('Receive message from device', message);

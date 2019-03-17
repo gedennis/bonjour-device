@@ -1,4 +1,4 @@
 module.exports = {
-  name: 'Panel 1',
+  name: 'PRM#Panel',
   port: 3000
 };
