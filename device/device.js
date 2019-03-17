@@ -1,9 +1,11 @@
 /*
  * @Description: Device class
- * @Author:Dennis
+ * 1. Devices will find hub in the local network with mdns
+ * 2. connect the hub with
+ * @Author: Dennis
  * @LastEditors: Please set LastEditors
  * @Date: 2019-03-17 00:58:58
- * @LastEditTime: 2019-03-18 00:22:44
+ * @LastEditTime: 2019-03-18 00:54:08
  */
 
 /**
