@@ -40,7 +40,7 @@ Then, we use [ioredis](https://github.com/luin/ioredis) to play with it.
 
 ### Basic architecture
 
-The system has two roles: **hub** and **device**.  
+The system has two roles: **Hub** and **Device**.  
 **Hub**
 
 - Hub integrates a bonjour service to advertise in the network.
@@ -48,7 +48,7 @@ The system has two roles: **hub** and **device**.
 - Upon connecting, hub will save a presence to redis.
 - hold a device monitor, and push presence to device monitor by websocket.
 
-**device**
+**Device**
 
 - The deviceswill integrate a bonjour browser, which search a hub in the network.
 - Once find one, it will connect the hub with websocket.
@@ -56,6 +56,7 @@ The system has two roles: **hub** and **device**.
 In our system, We will simulate two devices(1 phone and 1 fridge), one hub(one panel). Our architecture may like this:
 
 <div align=center> <img src="https://www.lucidchart.com/publicSegments/view/fa576e8a-e2f5-4ebd-8f74-924a652e7e48/image.png"/> </div>
+
 ### sequence diagram
 
 TODO
@@ -138,7 +139,7 @@ Okay, for now, you can play with it.
 
 TODO
 
-## Test.
+## Test
 
 We choose [jest]() to test our code. Our tests are all in test folder. You can run it with npm script.
 
