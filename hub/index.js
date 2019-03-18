@@ -1,20 +1,36 @@
+/*
+ * @Description: hub daemon
+ * 1. A http server with websocket
+ * 2. mdns client to find services in the network
+ * 3. serve device monitor page
+ * @Author: Dennis
+ * @LastEditTime: 2019-03-18 12:56:17
+ * @LastEditTime: 2019-03-18 13:44:51
+ */
+
 const fs = require('fs');
 const Koa = require('koa');
-const mdns = require('mdns');
 const http = require('http');
 const path = require('path');
+const mdns = require('mdns');
 const socket = require('socket.io');
 
 const config = require('./config');
 const cache = require('./cache');
+const logger = require('../utils/logger')('PANEL');
 
 const app = new Koa();
 
-const NAME = process.env.DEVNAME || config.name;
-const PORT = process.env.PORT || config.port;
-// app.use(ctx => {
-//   ctx.body = `Hello, this is device ${NAME}`;
-// });
+const hubName = process.env.DEVNAME || config.name;
+const port = process.env.PORT || config.port;
+
+// valid hubName and port
+if (!hubName.startsWith(config.namePrefix) || !port) {
+  logger.warn('invalid hub name or port');
+  process.exit(1);
+}
+
+// serve device monitor page
 app.use(ctx => {
   ctx.type = 'text/html';
   ctx.body = fs.createReadStream(path.join(__dirname, 'index.html'));
@@ -22,47 +38,56 @@ app.use(ctx => {
 
 const server = http.createServer(app.callback());
 const io = socket(server);
-// news for device on/off  chat for sending presence to frontend
-const device = io.of('device');
-const chat = io.of('chat');
+
+// device namespace for device on/off
+// chat namespace for sending presence to frontend
+const device = io.of(config.namespace.device);
+const chat = io.of(config.namespace.chat);
+
+const reportPresence = async () => {
+  const presence = await cache.getPresence();
+  chat.emit('presence', presence);
+};
+
+// device on/off handler
 device.on('connection', async socket => {
-  console.log('A device connected');
-  socket.on('message', async message => {
-    console.log('Receive message from device', message);
+  logger.info('A device connected');
+  socket.on('online', async message => {
+    logger.debug('Receive message from device', message);
+
+    // valid name, save the presence to redis
     message.name &&
       (await cache.setPresence({
         socketId: socket.id,
         devName: message.name,
         state: 'ON'
       }));
-    const presence = await cache.getPresence();
-    chat.emit('presence', presence);
+
+    // once update, emit presence to devcie monitor
+    reportPresence();
   });
   socket.on('disconnect', async msg => {
-    console.log('device disconnected');
+    logger.warn('device disconnected');
+    // delete connection session(socketId, devName)
     await cache.clearConnection({ socketId: socket.id });
-    const presence = await cache.getPresence();
-    chat.emit('presence', presence);
+    // once update, emit presence to devcie monitor
+    reportPresence();
   });
 });
 
+// device monitor connect, emit the presence
 chat.on('connection', async socket => {
-  console.log('A device monitor connected');
-  const presence = await cache.getPresence();
-  chat.emit('presence', presence);
+  logger.debug('A device monitor connected');
+  reportPresence();
 });
-server.listen(PORT);
-server.on('listening', () => {
-  const type = 'http';
 
+server.listen(port);
+server.on('listening', () => {
   // publish an advertisement
-  const opt = { name: NAME };
-  const ad = mdns.createAdvertisement(
-    mdns.tcp('http'),
-    server.address().port,
-    opt
-  );
+  const ad = mdns.createAdvertisement(mdns.tcp('http'), server.address().port, {
+    name: hubName
+  });
   ad.start();
 
-  console.info('Server is listening on port:%d', server.address().port);
+  logger.info('Server is listening on port:%d', server.address().port);
 });
