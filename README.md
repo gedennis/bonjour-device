@@ -55,7 +55,7 @@ The system has two roles: **Hub** and **Device**.
 
 In our system, We will simulate two devices(1 phone and 1 fridge), one hub(one panel). Our architecture may like this:
 
-<div align=center> <img src="https://www.lucidchart.com/publicSegments/view/fa576e8a-e2f5-4ebd-8f74-924a652e7e48/image.png"/> </div>
+<div align=center> <img width="500px" height="300px" src="./docs/architecture.png"/> </div>
 
 ### sequence diagram
 
@@ -129,7 +129,7 @@ $ node index.js
 
 While we setting up the hub, we also serve a simple page for view the device presence. Open ur browser and input the url. **http://<your hub host ip>:3000**. And you will see the presence in a real time. Green is online, gray is offline.And you can try to crash some device daemon. The device will be gray.
 
-<div align=center> <img src="./docs/monitor.png"/> </div>
+<div align=center> <img width="400px" height="250px"src="./docs/monitor.png"/> </div>
 
 Here, phone is online, and fridge is offline.
 
