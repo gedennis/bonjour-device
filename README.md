@@ -55,7 +55,7 @@ The system has two roles: **Hub** and **Device**.
 
 In our system, We will simulate two devices(1 phone and 1 fridge), one hub(one panel). Our architecture may like this:
 
-<div align=center> <img width="500px" height="300px" src="./docs/architecture.png"/> </div>
+<div align=center> <img width="500px" height="350px" src="./docs/Architecture.png"/> </div>
 
 ### sequence diagram
 
