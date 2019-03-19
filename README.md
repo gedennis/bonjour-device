@@ -20,6 +20,8 @@ In IoT, device paring is a normal but challenging thing. But how can a device co
 [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS)(Multicast DNS), is also known as **ZeroConf** or **bonjour**. A device with mDNS will advertize in the local network by publish its infomation(ip,port,serviceType...) with UDP.Also devices can query services with a specific service type. More info about mDNS, see the [specification](https://tools.ietf.org/html/rfc6762).  
 In our case, we need a npm module. [bonjour](https://github.com/watson/bonjour) and [mdns](https://github.com/agnat/node_mdns) both are good choices. We choose **mdns**, as its better documentation.
 
+> Finally, I choose bonjour instead. Because mdns depends on avahi. see the [issue](https://github.com/agnat/node_mdns/issues/227). It is a tough thing, although it can be solved. Another reason is, the docker image based on mdns is too large, so I choose bonjour instead.
+
 ### WebSocket
 
 We use [socket.io](https://socket.io/docs/) to do our websocket thing here. You can learn a lot from its documentation.
@@ -137,7 +139,20 @@ Okay, for now, you can play with it.
 
 ### Docker
 
-TODO
+You should install docker and docker-compose on your host. If not yet, [see this](https://docs.docker.com/v17.09/). Then, run it in your folder.
+
+```
+$ docker-compose up -d
+```
+
+Then, you will see 4 running containers: **prm-panel**、**prm-phone**、**prm-fridge** and **prm-redis**. You can see presence from device monitor via input localhost:3000 in your browser.  
+And you can run docker stop and start to on/off the device. like this:
+
+```
+$ docker stop prm-phone
+```
+
+You will see phone is off(gray) in the monitor.
 
 ## Test
 
