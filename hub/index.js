@@ -5,14 +5,15 @@
  * 3. serve device monitor page
  * @Author: Dennis
  * @LastEditTime: 2019-03-18 12:56:17
- * @LastEditTime: 2019-03-18 13:44:51
+ * @LastEditTime: 2019-03-19 20:44:22
  */
 
 const fs = require('fs');
 const Koa = require('koa');
 const http = require('http');
 const path = require('path');
-const mdns = require('mdns');
+// const mdns = require('mdns');
+const bonjour = require('bonjour')();
 const socket = require('socket.io');
 
 const config = require('./config');
@@ -82,12 +83,38 @@ chat.on('connection', async socket => {
 });
 
 server.listen(port);
-server.on('listening', () => {
-  // publish an advertisement
-  const ad = mdns.createAdvertisement(mdns.tcp('http'), server.address().port, {
-    name: hubName
+
+let service = null;
+const doExit = () => {
+  logger.warn('service stop ...');
+  service.stop(() => {
+    logger.warn('service stop done');
+    logger.warn('panel leave ...');
+    process.exit(1);
   });
-  ad.start();
+};
+process.on('SIGINT', err => {
+  doExit();
+});
+process.on('uncaughtException', err => {
+  doExit();
+});
+
+server.on('listening', () => {
+  // mdns deprecated for now
+  // publish an advertisement
+  // const ad = mdns.createAdvertisement(mdns.tcp('http'), server.address().port, {
+  //   name: hubName
+  // });
+  // ad.start();
+
+  // bonjour
+  service = bonjour.publish({
+    name: hubName,
+    type: 'http',
+    port: server.address().port
+  });
+  service.start();
 
   logger.info('Server is listening on port:%d', server.address().port);
 });

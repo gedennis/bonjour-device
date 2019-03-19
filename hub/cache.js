@@ -4,7 +4,7 @@
  * 2. save presence
  * @Author: Dennis
  * @Date: 2019-03-17 11:03:09
- * @LastEditTime: 2019-03-18 13:35:56
+ * @LastEditTime: 2019-03-19 21:34:16
  */
 const _ = require('lodash');
 const Redis = require('ioredis');
@@ -13,14 +13,11 @@ Redis.Promise = require('bluebird');
 const config = require('./config');
 const logger = require('../utils/logger')('CACHE');
 
-const opt = _.defaultsDeep(
-  {
-    host: '127.0.0.1',
-    port: '6379',
-    db: '12'
-  },
-  config.redis
-);
+const opt = _.defaultsDeep(config.redis, {
+  host: '127.0.0.1',
+  port: '6379',
+  db: '12'
+});
 
 const key = config.presenceKey;
 class Cacher {
