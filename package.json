@@ -4,7 +4,11 @@
   "description": "A bonjour demo for interview",
   "main": "index.js",
   "scripts": {
-    "test": "jest test/*.test.js"
+    "test": "jest --detectOpenHandles test/*.test.js"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true
   },
   "repository": {
     "type": "git",

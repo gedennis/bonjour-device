@@ -4,7 +4,7 @@
  * 2. connect the hub with socket.io
  * @Author: Dennis
  * @Date: 2019-03-17 00:58:58
- * @LastEditTime: 2019-03-18 14:01:56
+ * @LastEditTime: 2019-03-20 00:07:48
  */
 const net = require('net');
 // const mdns = require('mdns');
@@ -18,6 +18,7 @@ class Device {
     this.name = name;
     this.type = type;
     this.client = null;
+    this.browser = null;
     this.panel = {}; // suppose 1 only panel in the network for now!!!
   }
   /**
@@ -25,12 +26,11 @@ class Device {
    * @param {type}
    * @return:
    */
-  /*
   createBrowser() {
-    // TODO: more detail type
-    const browser = mdns.createBrowser(mdns.tcp(this.type));
+    this.browser = bonjour.find({ type: this.type });
+
     // service up event handler
-    browser.on('serviceUp', service => {
+    this.browser.on('up', service => {
       logger.debug('service up:', service);
       // filter specific services
       if (!service.name || !service.name.startsWith(config.servicePrefix))
@@ -44,40 +44,7 @@ class Device {
     });
 
     // service down event handler
-    browser.on('serviceDown', service => {
-      if (!service.name || !service.name.startsWith(config.servicePrefix))
-        return false;
-      logger.warn('Found a panel down', { name: service.name });
-
-      // if down service is panel connected
-      if (this.panel.name && this.panel.name === service.name) {
-        this.panel = {};
-      }
-      logger.info('Wait for panel up to connnect ...');
-    });
-
-    browser.start();
-  }
-  */
-  createBrowser() {
-    const browser = bonjour.find({ type: this.type });
-
-    // service up event handler
-    browser.on('up', service => {
-      logger.debug('service up:', service);
-      // filter specific services
-      if (!service.name || !service.name.startsWith(config.servicePrefix))
-        return false;
-      const host = service.addresses.find(ip => net.isIPv4(ip));
-      const port = service.port;
-      if (!host || !port) return false;
-      this.panel = { name: service.name, host, port };
-      logger.info('Found a valid panel up', { name: service.name, host, port });
-      this.initConnection();
-    });
-
-    // service down event handler
-    browser.on('down', service => {
+    this.browser.on('down', service => {
       logger.debug('service down:', service);
       if (!service.name || !service.name.startsWith(config.servicePrefix))
         return false;
@@ -90,7 +57,7 @@ class Device {
       logger.info('Wait for panel up to connnect ...');
     });
 
-    browser.start();
+    this.browser.start();
   }
   /**
    * @description:init socket client
