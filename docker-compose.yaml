@@ -1,0 +1,50 @@
+version: '2.2'
+
+services:
+  phone:
+    build:
+      context: .
+      dockerfile: ./device/Dockerfile
+    container_name: prm-phone
+    environment:
+      - DEVNAME=PRM#PHONE
+    networks:
+      - prm
+  fridge:
+    build:
+      context: .
+      dockerfile: ./device/Dockerfile
+    container_name: prm-fridge
+    environment:
+      - DEVNAME=PRM#FRIDGE
+    networks:
+      - prm
+  panel:
+    build:
+      context: .
+      dockerfile: ./hub/Dockerfile
+    container_name: prm-panel
+    environment:
+      - DEVNAME=PRM#PANEL
+      - REDIS_URL=prm-redis
+    ports:
+      - 3000:3000
+    links:
+      - 'prm-redis'
+    networks:
+      - prm
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000']
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    depends_on:
+      - prm-redis
+  prm-redis:
+    restart: unless-stopped
+    image: redis:3.2-alpine
+    networks:
+      - prm
+
+networks:
+  prm:
